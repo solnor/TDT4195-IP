@@ -1,3 +1,6 @@
+# Folders
+*/data/*
+
 # VSCode
 .vscode/*
 !.vscode/settings.json

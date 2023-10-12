@@ -1,9 +1,10 @@
+import utils
+utils.assign_free_gpus()
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
 import tqdm
 import numpy as np
-import utils
 import dataloaders
 import torchvision
 from trainer import Trainer
