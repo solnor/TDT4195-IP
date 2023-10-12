@@ -83,7 +83,7 @@ def to_cuda(elements):
     return elements.cuda()
 
 
-def assign_free_gpus(threshold_vram_usage=6000, max_gpus=1, wait=False, sleep_time=10):
+def assign_free_gpus(threshold_vram_usage=6000, max_gpus=1):
     """
     Assigns free gpus to the current process via the CUDA_AVAILABLE_DEVICES env variable
     This function should be called after all imports,
@@ -119,14 +119,12 @@ def assign_free_gpus(threshold_vram_usage=6000, max_gpus=1, wait=False, sleep_ti
         gpus_to_use = ",".join(free_gpus)
         return gpus_to_use
 
-    while True:
+    
+    if torch.cuda.is_available():
         gpus_to_use = _check()
-        if gpus_to_use or not wait:
-            break
-        print(f"No free GPUs found, retrying in {sleep_time}s")
-        time.sleep(sleep_time)
-
-    if not gpus_to_use:
-        raise RuntimeError("No free GPUs found")
-    os.environ["CUDA_VISIBLE_DEVICES"] = gpus_to_use
-    print(f"Using GPU index: {gpus_to_use}")
+        if gpus_to_use:
+            os.environ["CUDA_VISIBLE_DEVICES"] = gpus_to_use
+            print(f"Using GPU index: {gpus_to_use}")
+            return
+    
+    print("No GPU available, using CPU")
