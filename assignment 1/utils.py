@@ -102,9 +102,12 @@ def assign_free_gpus(threshold_vram_usage=6000, max_gpus=1):
 
     def _check():
         # Get the list of GPUs via nvidia-smi
-        smi_query_result = subprocess.check_output(
-            "nvidia-smi -q -d Memory | grep -A4 GPU", shell=True
-        )
+        try:
+            smi_query_result = subprocess.check_output(
+                "nvidia-smi -q -d Memory | grep -A4 GPU", shell=True
+            )
+        except subprocess.CalledProcessError:
+            return False
         # Extract the usage information
         gpu_info = smi_query_result.decode("utf-8").split("\n")
         gpu_info = list(filter(lambda info: "Used" in info, gpu_info))
@@ -119,12 +122,10 @@ def assign_free_gpus(threshold_vram_usage=6000, max_gpus=1):
         gpus_to_use = ",".join(free_gpus)
         return gpus_to_use
 
-    
-    if torch.cuda.is_available():
-        gpus_to_use = _check()
-        if gpus_to_use:
-            os.environ["CUDA_VISIBLE_DEVICES"] = gpus_to_use
-            print(f"Using GPU index: {gpus_to_use}")
-            return
+    gpus_to_use = _check()
+    if gpus_to_use:
+        os.environ["CUDA_VISIBLE_DEVICES"] = gpus_to_use
+        print(f"Using GPU index: {gpus_to_use}")
+        return
     
     print("No GPU available, using CPU")
