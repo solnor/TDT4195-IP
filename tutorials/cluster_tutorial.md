@@ -15,7 +15,7 @@ Follow these steps for the initial setup
 
 1. Download VScode (https://code.visualstudio.com/download)
 
-2. Install "Remote Explorer" vscode extension (localy) (https://marketplace.visualstudio.com/items?itemName=ms-vscode.remote-explorer)
+2. Install "Remote - SSH" vscode extension (localy)
 
 3. In the Remote Explorer extension add a new remote server (+)
 ```
