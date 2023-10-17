@@ -52,3 +52,13 @@ You can also download this repository as a zip file and unzip it on your compute
 ```
 git pull origin main
 ```
+
+**If you wish to commit your changes to your own Git repo**, you can do so by:
+1. Creating an empty private repository
+2. While inside the starter code directory, run `git remote rename origin upstream`
+3. `git remote add origin YOUR_REPO_URL`
+4. `git push -u origin main`
+
+Then, when a new change is added to the upstream repo, you can add it to your own repo by running:
+1. `git pull upstream main`
+2. `git push`
