@@ -50,5 +50,17 @@ You can also download this repository as a zip file and unzip it on your compute
 **There might be minor typos or minor alterations to the starter code**. If this happens, we will notify you on blackboard and you can update your starter code by doing (In your assignment directory):
 
 ```
-git pull origin master
+git pull origin main
 ```
+
+**If you wish to commit your changes to your own Git repo**, you can do so by:
+1. Creating an empty private repository
+2. While inside the starter code directory, run `git remote rename origin upstream`
+3. `git remote add origin YOUR_REPO_URL`
+4. `git push -u origin main`
+
+Then, when a new change is added to the upstream repo, you can add it to your own repo by running:
+1. `git pull upstream main`
+2. `git push`
+
+*Note:* it is recommended to use git through a client like VS Code and sign in with your GitHub user. If you use git in a terminal, you may need to authenticate with GitHub with a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) as your password.
