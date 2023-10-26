@@ -22,8 +22,32 @@ def convolve_im(im, kernel,
         [type]: [np.array of shape [H, W, 3]. should be same as im]
     """
     assert len(im.shape) == 3
+    assert kernel.shape[0]%2 == 1
+    assert kernel.shape[1]%2 == 1
 
-    return im
+    kernel   = np.flipud(np.fliplr(kernel))
+    k_center = (kernel.shape[0]-1)//2
+
+    out_im = np.copy(im)
+    padded_im = np.pad(np.copy(im), ((k_center,k_center),(k_center,k_center),(0,0)), 'constant', constant_values=0)
+
+    W = im.shape[0]
+    H = im.shape[1]
+
+    start_w = k_center
+    stop_w  = W
+
+    start_h = k_center
+    stop_h  = H
+
+    ones = np.ones((kernel.shape[0],))
+    for w in range(start_w, stop_w):
+        for h in range(start_h, stop_h):
+            for c in range(0, 3):
+                im_slice = padded_im[w-k_center:w+k_center+1,h-k_center:h+k_center+1,c]
+                sum = np.dot(np.dot(im_slice*kernel,ones), ones)
+                out_im[w-k_center,h-k_center,c] = sum
+    return out_im
 
 
 if __name__ == "__main__":
