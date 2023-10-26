@@ -54,7 +54,7 @@ assert output.shape == expected_shape,    f"Expected shape: {expected_shape}, bu
 
 # Hyperparameters
 learning_rate = .0192
-# learning_rate = 1
+learning_rate = 1
 num_epochs = 5
 
 
