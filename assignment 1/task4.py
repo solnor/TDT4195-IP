@@ -17,6 +17,7 @@ batch_size = 64
 
 image_transform = torchvision.transforms.Compose([
     torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize(mean=0.5, std=0.5)
 ])
 
 dataloader_train, dataloader_test = dataloaders.load_dataset(
@@ -53,6 +54,7 @@ assert output.shape == expected_shape,    f"Expected shape: {expected_shape}, bu
 
 # Hyperparameters
 learning_rate = .0192
+# learning_rate = 1
 num_epochs = 5
 
 
@@ -74,6 +76,25 @@ trainer = Trainer(
 )
 train_loss_dict, test_loss_dict = trainer.train(num_epochs)
 
+weights_ = list(model.children())[1].weight.cpu().data.numpy()
+
+weights = np.zeros((10,28,28))
+for i in range(10):
+    weights[i][:][:] = np.reshape(weights_[i], (28,28))
+
+
+# fig = plt.figure()
+# cols = 2; rows = 5
+# for i in range(cols*rows):
+#     fig.add_subplot(rows, cols, i+1)
+#     plt.imshow(weights[i], cmap="gray")
+
+# plt.show()
+
+num_weights = 10
+for i in range(num_weights):
+    plt.imshow(weights[i], cmap="gray")
+    plt.show()
 
 # We can now plot the training loss with our utility script
 
@@ -90,67 +111,6 @@ plt.savefig("image_solutions/task_4a.png")
 plt.show()
 
 torch.save(model.state_dict(), "saved_model.torch")
-final_loss, final_acc = utils.compute_loss_and_accuracy(
-    dataloader_test, model, loss_function)
-print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")
-
-
-# You can delete the remaining code of this notebook, as this is just to illustrate one method to solve the assignment tasks.
-
-
-# This example code is here to illustrate how you can plot two different models to compare them.
-# Lets change a small part of our model: the number of epochs trained (NOTE, use 5 epochs for your experiments in the assignment.)
-
-# We reset the manual seed to 0, such that the model parameters are initialized with the same random number generator.
-torch.random.manual_seed(0)
-np.random.seed(0)
-
-
-image_transform = torchvision.transforms.Compose([
-    torchvision.transforms.ToTensor(),
-    torchvision.transforms.Normalize(mean=0.5, std=0.5)
-])
-
-dataloader_train, dataloader_test = dataloaders.load_dataset(
-    batch_size, image_transform)
-model = create_model()
-
-learning_rate = .0192
-num_epochs = 5
-
-# Redefine optimizer, as we have a new model.
-optimizer = torch.optim.SGD(model.parameters(),
-                            lr=learning_rate)
-trainer = Trainer(
-    model=model,
-    dataloader_train=dataloader_train,
-    dataloader_test=dataloader_test,
-    batch_size=batch_size,
-    loss_function=loss_function,
-    optimizer=optimizer
-)
-train_loss_dict_normalized, test_loss_dict_normalized = trainer.train(num_epochs)
-
-
-# We can now plot the two models against eachother
-
-# Plot loss
-utils.plot_loss(train_loss_dict_normalized,
-                label="Train Loss - Model trained with normalized images ([-1,1])")
-utils.plot_loss(test_loss_dict_normalized,
-                label="Test Loss - Model trained with normalized images ([-1,1])")
-utils.plot_loss(train_loss_dict, label="Train Loss - Original model")
-utils.plot_loss(test_loss_dict, label="Test Loss - Original model")
-# Limit the y-axis of the plot (The range should not be increased!)
-plt.ylim([0, 1])
-plt.legend()
-plt.xlabel("Global Training Step")
-plt.ylabel("Cross Entropy Loss")
-plt.savefig("image_solutions/task_4a.png")
-
-plt.show()
-
-torch.save(model.state_dict(), "saved_model_normalized.torch")
 final_loss, final_acc = utils.compute_loss_and_accuracy(
     dataloader_test, model, loss_function)
 print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")
