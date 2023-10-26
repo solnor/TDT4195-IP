@@ -8,6 +8,7 @@ import numpy as np
 import dataloaders
 import torchvision
 from trainer import Trainer
+
 torch.random.manual_seed(0)
 np.random.seed(0)
 
@@ -33,7 +34,9 @@ def create_model():
     """
     model = nn.Sequential(
         nn.Flatten(),  # Flattens the image from shape (batch_size, C, Height, width) to (batch_size, C*height*width)
-        nn.Linear(28*28*1, 10)
+        nn.Linear(28*28*1, 64),
+        nn.ReLU(),
+        nn.Linear(64, 10),
         # No need to include softmax, as this is already combined in the loss function
     )
     # Transfer model to GPU memory if a GPU is available
@@ -54,7 +57,6 @@ assert output.shape == expected_shape,    f"Expected shape: {expected_shape}, bu
 
 # Hyperparameters
 learning_rate = .0192
-learning_rate = 1
 num_epochs = 5
 
 
@@ -76,11 +78,11 @@ trainer = Trainer(
 )
 train_loss_dict, test_loss_dict = trainer.train(num_epochs)
 
-weights_ = list(model.children())[1].weight.cpu().data.numpy()
-
-weights = np.zeros((10,28,28))
-for i in range(10):
-    weights[i][:][:] = np.reshape(weights_[i], (28,28))
+# weights_ = list(model.children())[-1].weight.cpu().data.numpy()
+# print(np.shape(weights_))
+# weights = np.zeros((10,28,28))
+# for i in range(10):
+#     weights[i][:][:] = np.reshape(weights_[i], (28,28))
 
 
 # fig = plt.figure()
@@ -91,10 +93,10 @@ for i in range(10):
 
 # plt.show()
 
-num_weights = 10
-for i in range(num_weights):
-    plt.imshow(weights[i], cmap="gray")
-    plt.show()
+# num_weights = 10
+# for i in range(num_weights):
+#     plt.imshow(weights[i], cmap="gray")
+#     plt.show()
 
 # We can now plot the training loss with our utility script
 
