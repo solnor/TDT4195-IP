@@ -106,12 +106,17 @@ torch.random.manual_seed(0)
 np.random.seed(0)
 
 
+image_transform = torchvision.transforms.Compose([
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize(mean=0.5, std=0.5)
+])
+
 dataloader_train, dataloader_test = dataloaders.load_dataset(
     batch_size, image_transform)
 model = create_model()
 
 learning_rate = .0192
-num_epochs = 6
+num_epochs = 5
 
 # Redefine optimizer, as we have a new model.
 optimizer = torch.optim.SGD(model.parameters(),
@@ -124,17 +129,16 @@ trainer = Trainer(
     loss_function=loss_function,
     optimizer=optimizer
 )
-train_loss_dict_6epochs, test_loss_dict_6epochs = trainer.train(num_epochs)
-num_epochs = 5
+train_loss_dict_normalized, test_loss_dict_normalized = trainer.train(num_epochs)
 
 
 # We can now plot the two models against eachother
 
 # Plot loss
-utils.plot_loss(train_loss_dict_6epochs,
-                label="Train Loss - Model trained with 6 epochs")
-utils.plot_loss(test_loss_dict_6epochs,
-                label="Test Loss - Model trained with 6 epochs")
+utils.plot_loss(train_loss_dict_normalized,
+                label="Train Loss - Model trained with normalized images ([-1,1])")
+utils.plot_loss(test_loss_dict_normalized,
+                label="Test Loss - Model trained with normalized images ([-1,1])")
 utils.plot_loss(train_loss_dict, label="Train Loss - Original model")
 utils.plot_loss(test_loss_dict, label="Test Loss - Original model")
 # Limit the y-axis of the plot (The range should not be increased!)
@@ -146,7 +150,82 @@ plt.savefig("image_solutions/task_4a.png")
 
 plt.show()
 
-torch.save(model.state_dict(), "saved_model.torch")
+torch.save(model.state_dict(), "saved_model_normalized.torch")
 final_loss, final_acc = utils.compute_loss_and_accuracy(
     dataloader_test, model, loss_function)
 print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# dataloader_train, dataloader_test = dataloaders.load_dataset(
+#     batch_size, image_transform)
+# model = create_model()
+
+# learning_rate = .0192
+# num_epochs = 6
+
+# # Redefine optimizer, as we have a new model.
+# optimizer = torch.optim.SGD(model.parameters(),
+#                             lr=learning_rate)
+# trainer = Trainer(
+#     model=model,
+#     dataloader_train=dataloader_train,
+#     dataloader_test=dataloader_test,
+#     batch_size=batch_size,
+#     loss_function=loss_function,
+#     optimizer=optimizer
+# )
+# train_loss_dict_6epochs, test_loss_dict_6epochs = trainer.train(num_epochs)
+# num_epochs = 5
+
+
+# # We can now plot the two models against eachother
+
+# # Plot loss
+# utils.plot_loss(train_loss_dict_6epochs,
+#                 label="Train Loss - Model trained with 6 epochs")
+# utils.plot_loss(test_loss_dict_6epochs,
+#                 label="Test Loss - Model trained with 6 epochs")
+# utils.plot_loss(train_loss_dict, label="Train Loss - Original model")
+# utils.plot_loss(test_loss_dict, label="Test Loss - Original model")
+# # Limit the y-axis of the plot (The range should not be increased!)
+# plt.ylim([0, 1])
+# plt.legend()
+# plt.xlabel("Global Training Step")
+# plt.ylabel("Cross Entropy Loss")
+# plt.savefig("image_solutions/task_4a.png")
+
+# plt.show()
+
+# torch.save(model.state_dict(), "saved_model.torch")
+# final_loss, final_acc = utils.compute_loss_and_accuracy(
+#     dataloader_test, model, loss_function)
+# print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")
