@@ -6,7 +6,7 @@ output_dir = pathlib.Path("image_solutions")
 output_dir.mkdir(exist_ok=True)
 
 
-im = read_im(pathlib.Path("images", "lake.jpg"))
+im = read_im(pathlib.Path("images", "duck.jpeg"))
 plt.imshow(im)
 
 

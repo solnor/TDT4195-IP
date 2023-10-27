@@ -5,8 +5,9 @@ output_dir = pathlib.Path("image_solutions")
 output_dir.mkdir(exist_ok=True)
 
 
-im = read_im(pathlib.Path("images", "lake.jpg"))
+im = read_im(pathlib.Path("images", "duck.jpeg"))
 plt.imshow(im)
+
 
 
 def greyscale(im):
@@ -23,7 +24,7 @@ def greyscale(im):
 
 
 im_greyscale = greyscale(im)
-save_im(output_dir.joinpath("lake_greyscale.jpg"), im_greyscale, cmap="gray")
+save_im(output_dir.joinpath("duck_greyscale.jpeg"), im_greyscale, cmap="gray")
 plt.imshow(im_greyscale, cmap="gray")
 
 
