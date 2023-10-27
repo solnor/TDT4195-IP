@@ -34,6 +34,19 @@ def create_model():
     """
     model = nn.Sequential(
         nn.Flatten(),  # Flattens the image from shape (batch_size, C, Height, width) to (batch_size, C*height*width)
+        nn.Linear(28*28*1, 10),
+        # No need to include softmax, as this is already combined in the loss function
+    )
+    # Transfer model to GPU memory if a GPU is available
+    model = utils.to_cuda(model)
+    return model
+
+def create_model_ReLU():
+    """
+        Initializes the mode. Edit the code below if you would like to change the model.
+    """
+    model = nn.Sequential(
+        nn.Flatten(),  # Flattens the image from shape (batch_size, C, Height, width) to (batch_size, C*height*width)
         nn.Linear(28*28*1, 64),
         nn.ReLU(),
         nn.Linear(64, 10),
@@ -43,8 +56,7 @@ def create_model():
     model = utils.to_cuda(model)
     return model
 
-
-model = create_model()
+model = create_model_ReLU()
 
 
 # Test if the model is able to do a single forward pass
@@ -78,26 +90,6 @@ trainer = Trainer(
 )
 train_loss_dict, test_loss_dict = trainer.train(num_epochs)
 
-# weights_ = list(model.children())[-1].weight.cpu().data.numpy()
-# print(np.shape(weights_))
-# weights = np.zeros((10,28,28))
-# for i in range(10):
-#     weights[i][:][:] = np.reshape(weights_[i], (28,28))
-
-
-# fig = plt.figure()
-# cols = 2; rows = 5
-# for i in range(cols*rows):
-#     fig.add_subplot(rows, cols, i+1)
-#     plt.imshow(weights[i], cmap="gray")
-
-# plt.show()
-
-# num_weights = 10
-# for i in range(num_weights):
-#     plt.imshow(weights[i], cmap="gray")
-#     plt.show()
-
 # We can now plot the training loss with our utility script
 
 # Plot loss
@@ -108,7 +100,7 @@ plt.ylim([0, 1])
 plt.legend()
 plt.xlabel("Global Training Step")
 plt.ylabel("Cross Entropy Loss")
-plt.savefig("image_solutions/task_4a.png")
+plt.savefig("image_solutions/task_4d.png")
 
 plt.show()
 
@@ -118,7 +110,54 @@ final_loss, final_acc = utils.compute_loss_and_accuracy(
 print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")
 
 
+# You can delete the remaining code of this notebook, as this is just to illustrate one method to solve the assignment tasks.
 
+
+# This example code is here to illustrate how you can plot two different models to compare them.
+# Lets change a small part of our model: the number of epochs trained (NOTE, use 5 epochs for your experiments in the assignment.)
+
+# We reset the manual seed to 0, such that the model parameters are initialized with the same random number generator.
+torch.random.manual_seed(0)
+np.random.seed(0)
+
+model = create_model()
+
+# Redefine optimizer, as we have a new model.
+optimizer = torch.optim.SGD(model.parameters(),
+                            lr=learning_rate)
+trainer = Trainer(
+    model=model,
+    dataloader_train=dataloader_train,
+    dataloader_test=dataloader_test,
+    batch_size=batch_size,
+    loss_function=loss_function,
+    optimizer=optimizer
+)
+train_loss_dict_4a, test_loss_dict_4a = trainer.train(num_epochs)
+
+
+# We can now plot the two models against eachother
+
+# Plot loss
+utils.plot_loss(train_loss_dict_4a,
+                label="Train Loss - Model 4a")
+utils.plot_loss(test_loss_dict_4a,
+                label="Test Loss - Model 4a")
+utils.plot_loss(train_loss_dict, label="Train Loss - Model 4d")
+utils.plot_loss(test_loss_dict, label="Test Loss - Model 4d")
+# Limit the y-axis of the plot (The range should not be increased!)
+plt.ylim([0, 1])
+plt.legend()
+plt.xlabel("Global Training Step")
+plt.ylabel("Cross Entropy Loss")
+plt.savefig("image_solutions/task_4a.png")
+
+plt.show()
+
+torch.save(model.state_dict(), "saved_model_4a.torch")
+final_loss, final_acc = utils.compute_loss_and_accuracy(
+    dataloader_test, model, loss_function)
+print(f"Final Test loss: {final_loss}. Final Test accuracy: {final_acc}")
 
 
 
