@@ -31,8 +31,22 @@ def create_model():
         Initializes the mode. Edit the code below if you would like to change the model.
     """
     model = nn.Sequential(
+        nn.Conv2d(in_channels=1, out_channels=32, kernel_size=5, stride=1, padding=2),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+        #
+        nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, stride=1, padding=1),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+        #
+        nn.Conv2d(in_channels=64, out_channels=128, kernel_size=3, stride=1, padding=1),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+        #
         nn.Flatten(),  # Flattens the image from shape (batch_size, C, Height, width) to (batch_size, C*height*width)
-        nn.Linear(32*32*1, 10)
+        nn.Linear(128*4*4, 64),
+        nn.ReLU(),
+        nn.Linear(64, 10),
         # No need to include softmax, as this is already combined in the loss function
     )
     # Transfer model to GPU memory if a GPU is available
