@@ -27,7 +27,19 @@ def create_binary_image(im):
     """
 
     # START YOUR CODE HERE ### (You can change anything inside this block)
-    binary_im = np.zeros_like(im, dtype=np.bool)
+    # Fourier transform image, shift the frequencies to centre
+    im_fft = np.fft.fft2(im)
+    im_fft = np.fft.fftshift(im_fft)
+    # Get magnitude, normalize
+    im_fft = np.log(np.abs(im_fft) + 1)
+    im_fft = utils.normalize(im_fft)
+
+    threshold = 0.5
+    binary_im = np.zeros_like(im)
+    # Set to 1 where the normalized magnitude is above threshold
+    binary_im = np.where(im_fft>threshold, 1, 0)
+    binary_im = binary_im.astype(bool)
+
     ### END YOUR CODE HERE ###
     return binary_im
 
@@ -41,7 +53,7 @@ if __name__ == "__main__":
     for i, impath in enumerate(impaths):
         im = utils.read_im(str(impath))
         im_binary = create_binary_image(im)
-        assert im_binary.dtype == np.bool,            f"Expected the image to be of dtype np.bool, got {im_binary.dtype}"
+        assert im_binary.dtype == bool,            f"Expected the image to be of dtype np.bool, got {im_binary.dtype}"
         angles, distances = utils.find_angle(im_binary)
         angle = 0
         if len(angles) > 0:
